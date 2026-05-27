@@ -1,2 +1,2 @@
-# WBAPP
+# weatherbear
 Weather Bear

@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Havsobservationer – Tvestjärten</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --bg-soft: #121a2b;
+      --card: rgba(255, 255, 255, 0.08);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --text: #eef4ff;
+      --muted: #a9b4c9;
+      --accent: #69b7ff;
+      --accent-2: #8ef0d0;
+      --danger: #ff8b8b;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, #173057 0%, transparent 35%),
+        radial-gradient(circle at top right, #0f4c5c 0%, transparent 30%),
+        linear-gradient(180deg, #08101d 0%, #0b1220 100%);
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+
+    .hero-card, .panel, .metric-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card {
+      padding: 28px;
+      min-height: 240px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .title-wrap h1 {
+      margin: 0 0 8px;
+      font-size: 34px;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(105, 183, 255, 0.14);
+      color: #d8ebff;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--accent-2);
+      box-shadow: 0 0 12px var(--accent-2);
+    }
+
+    .hero-bottom {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+
+    .big-value {
+      font-size: 52px;
+      line-height: 0.95;
+      font-weight: 800;
+      letter-spacing: -0.05em;
+    }
+
+    .big-label {
+      color: var(--muted);
+      font-size: 16px;
+      margin-top: 8px;
+    }
+
+    .panel {
+      padding: 22px;
+    }
+
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+    }
+
+    .panel p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .meta-grid {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .meta-item {
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .meta-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .meta-value {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .metric-card {
+      padding: 20px;
+      min-height: 150px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .metric-icon {
+      font-size: 26px;
+      margin-bottom: 14px;
+    }
+
+    .metric-value {
+      font-size: 32px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .metric-unit {
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+    }
+
+    .section-title {
+      margin: 0 0 14px;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+    }
+
+    .list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .list-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .list-row-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .list-title {
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .list-subtitle {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .list-value {
+      font-weight: 800;
+      font-size: 16px;
+      text-align: right;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      .hero, .bottom-grid, .metrics-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .hero { grid-template-columns: 1fr; }
+      .bottom-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 700px) {
+      .container { padding: 16px; }
+      .metrics-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 520px) {
+      .metrics-grid, .meta-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero-top, .hero-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <div class="hero-card">
+        <div class="hero-top">
+          <div class="title-wrap">
+            <h1>Havsobservationer</h1>
+            <p class="subtitle">Tvestjärten • Orust</p>
+          </div>
+          <div class="status-pill">
+            <span class="dot"></span>
+            <span id="statusText">Laddar...</span>
+          </div>
+        </div>
+
+        <div class="hero-bottom">
+          <div>
+            <div class="big-value">Tvestjärten</div>
+            <div class="big-label">Fast position</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Översikt</h2>
+        <p>
+          Den här sidan är optimerad för Tvestjärten. Bara stationer inom vald radie får användas.
+        </p>
+
+        <div class="meta-grid">
+          <div class="meta-item">
+            <div class="meta-label">Plats</div>
+            <div class="meta-value">Tvestjärten</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Vald metod</div>
+            <div class="meta-value">Fast position</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Koordinater</div>
+            <div class="meta-value" id="positionValue">58.1746, 11.4052</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Senaste observation</div>
+            <div class="meta-value" id="eventValue">--</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="metrics-grid">
+      <div class="metric-card">
+        <div>
+          <div class="metric-icon">📏</div>
+          <div class="metric-label">Vattenstånd</div>
+        </div>
+        <div>
+          <div class="metric-value" id="waterLevelCard">--</div>
+          <div class="metric-unit">centimeter</div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div>
+          <div class="metric-icon">🌊</div>
+          <div class="metric-label">Våghöjd</div>
+        </div>
+        <div>
+          <div class="metric-value" id="waveHeightCard">--</div>
+          <div class="metric-unit">meter</div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div>
+          <div class="metric-icon">📍</div>
+          <div class="metric-label">Vattenståndsstation</div>
+        </div>
+        <div>
+          <div class="metric-value" id="waterStationShort">--</div>
+          <div class="metric-unit">närmast med data</div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div>
+          <div class="metric-icon">🛟</div>
+          <div class="metric-label">Vågstation</div>
+        </div>
+        <div>
+          <div class="metric-value" id="waveStationShort">--</div>
+          <div class="metric-unit">närmast med data</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bottom-grid">
+      <div class="panel">
+        <h2 class="section-title">Stationer som används</h2>
+        <div class="list">
+          <div class="list-row">
+            <div class="list-row-left">
+              <div class="list-title">Vattenstånd</div>
+              <div class="list-subtitle">Vald station för Tvestjärten</div>
+            </div>
+            <div class="list-value" id="stationNameList">--</div>
+          </div>
+
+          <div class="list-row">
+            <div class="list-row-left">
+              <div class="list-title">Våghöjd</div>
+              <div class="list-subtitle">Vald station för Tvestjärten</div>
+            </div>
+            <div class="list-value" id="waveStationList">--</div>
+          </div>
+
+          <div class="list-row">
+            <div class="list-row-left">
+              <div class="list-title">Stationsposition</div>
+              <div class="list-subtitle">Vattenståndsstation</div>
+            </div>
+            <div class="list-value" id="stationCoordsList">--</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 class="section-title">Status</h2>
+        <div class="list">
+          <div class="list-row">
+            <div class="list-row-left">
+              <div class="list-title">Nuvarande läge</div>
+              <div class="list-subtitle">Avståndsbegränsning aktiv</div>
+            </div>
+            <div class="list-value">Aktivt</div>
+          </div>
+
+          <div class="list-row">
+            <div class="list-row-left">
+              <div class="list-title">Nästa förbättring</div>
+              <div class="list-subtitle">Låsa specifika stationer manuellt</div>
+            </div>
+            <div class="list-value">Nästa</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer-note">
+      Tvestjärten-läge: bara stationer inom maxradie används
+    </div>
+  </div>
+
+  <script>
+    const targetPlace = {
+      name: "Tvestjärten",
+      lat: 58.17461,
+      lon: 11.40517
+    };
+
+    // Justera dessa om du vill vara mer eller mindre strikt
+    const MAX_WATER_DISTANCE_KM = 60;
+    const MAX_WAVE_DISTANCE_KM = 80;
+
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
+
+    function formatCoord(v) {
+      const n = Number(v);
+      return Number.isNaN(n) ? "--" : n.toFixed(4);
+    }
+
+    function formatValue(v, decimals = 1) {
+      const n = Number(v);
+      return Number.isNaN(n) ? "--" : n.toFixed(decimals);
+    }
+
+    function formatSmhiDate(value) {
+      if (value === null || value === undefined) return "--";
+
+      const num = Number(value);
+      if (!Number.isNaN(num) && String(value).length >= 10) {
+        const date = new Date(num);
+        if (!Number.isNaN(date.getTime())) {
+          return date.toLocaleString("sv-SE", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit"
+          });
+        }
+      }
+
+      const date = new Date(value);
+      if (!Number.isNaN(date.getTime())) {
+        return date.toLocaleString("sv-SE", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+      }
+
+      return String(value);
+    }
+
+    function findStationArray(data) {
+      if (Array.isArray(data?.station)) return data.station;
+      if (Array.isArray(data?.stations)) return data.stations;
+      if (Array.isArray(data?.resource)) return data.resource;
+      return [];
+    }
+
+    function findLatestValue(data) {
+      if (Array.isArray(data?.value) && data.value.length > 0) {
+        return data.value[data.value.length - 1];
+      }
+      if (Array.isArray(data?.values) && data.values.length > 0) {
+        return data.values[data.values.length - 1];
+      }
+      return null;
+    }
+
+    function toRad(deg) {
+      return deg * Math.PI / 180;
+    }
+
+    function distanceKm(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    function sortStationsByDistance(stations, targetLat, targetLon) {
+      return stations
+        .map((station) => {
+          const lat = Number(station.latitude);
+          const lon = Number(station.longitude);
+          const dist = distanceKm(targetLat, targetLon, lat, lon);
+          return { station, dist };
+        })
+        .filter((item) => !Number.isNaN(item.dist))
+        .sort((a, b) => a.dist - b.dist);
+    }
+
+    async function fetchSeries(url) {
+      const res = await fetch(url);
+      const data = await res.json();
+      return { res, data };
+    }
+
+    async function findNearestWorkingStation({
+      stationsUrl,
+      dataUrlBuilder,
+      targetLat,
+      targetLon,
+      maxDistanceKm
+    }) {
+      const stationsRes = await fetch(stationsUrl);
+      const stationsData = await stationsRes.json();
+      const stations = findStationArray(stationsData);
+
+      if (!stations.length) throw new Error("Inga stationer hittades.");
+
+      const ranked = sortStationsByDistance(stations, targetLat, targetLon)
+        .filter((item) => item.dist <= maxDistanceKm)
+        .slice(0, 25);
+
+      for (const item of ranked) {
+        const station = item.station;
+        const stationId = station.id || station.key || station.stationId;
+        if (!stationId) continue;
+
+        for (const period of ["latest-hour", "latest-day", "latest-months"]) {
+          try {
+            const { res, data } = await fetchSeries(dataUrlBuilder(stationId, period));
+            if (!res.ok) continue;
+
+            const latest = findLatestValue(data);
+            if (latest && latest.value !== undefined && latest.value !== null) {
+              return { station, latest, period, distanceKm: item.dist };
+            }
+          } catch (e) {}
+        }
+      }
+
+      return null;
+    }
+
+    async function loadTvestjartenPage() {
+      try {
+        setText("statusText", "Laddar...");
+        setText("positionValue", `${formatCoord(targetPlace.lat)}, ${formatCoord(targetPlace.lon)}`);
+
+        const [waterResult, waveResult] = await Promise.all([
+          findNearestWorkingStation({
+            stationsUrl: "/api/ocean-stations",
+            dataUrlBuilder: (stationId, period) => `/api/ocean-water-level?stationId=${stationId}&period=${period}`,
+            targetLat: targetPlace.lat,
+            targetLon: targetPlace.lon,
+            maxDistanceKm: MAX_WATER_DISTANCE_KM
+          }),
+          findNearestWorkingStation({
+            stationsUrl: "/api/ocean-wave-stations",
+            dataUrlBuilder: (stationId, period) => `/api/ocean-wave-height?stationId=${stationId}&period=${period}`,
+            targetLat: targetPlace.lat,
+            targetLon: targetPlace.lon,
+            maxDistanceKm: MAX_WAVE_DISTANCE_KM
+          })
+        ]);
+
+        if (waterResult) {
+          const waterStation = waterResult.station;
+          const waterLatest = waterResult.latest;
+          const waterPeriod = waterResult.period;
+          const waterStationName = waterStation.name || "Okänd station";
+          const waterDate = formatSmhiDate(waterLatest.date || waterLatest.time || "--");
+
+          setText("stationNameList", waterStationName);
+          setText("waterStationShort", waterStationName);
+          setText("stationCoordsList", `${formatCoord(waterStation.latitude)}, ${formatCoord(waterStation.longitude)}`);
+          setText("waterLevelCard", formatValue(waterLatest.value, 1));
+          setText("eventValue", `${waterDate} (${waterPeriod})`);
+        } else {
+          setText("stationNameList", "Ingen station nära nog");
+          setText("waterStationShort", "--");
+          setText("stationCoordsList", "--");
+          setText("waterLevelCard", "--");
+          setText("eventValue", "Ingen vattenståndsstation inom vald radie");
+        }
+
+        if (waveResult) {
+          const waveStation = waveResult.station;
+          const waveLatest = waveResult.latest;
+          const waveStationName = waveStation.name || "Okänd station";
+
+          setText("waveStationList", waveStationName);
+          setText("waveStationShort", waveStationName);
+          setText("waveHeightCard", formatValue(waveLatest.value, 1));
+        } else {
+          setText("waveStationList", "Ingen boj nära nog");
+          setText("waveStationShort", "--");
+          setText("waveHeightCard", "--");
+        }
+
+        setText("statusText", "Live");
+      } catch (error) {
+        console.error(error);
+        setText("statusText", "Fel");
+        setText("eventValue", "Kunde inte ladda data");
+      }
+    }
+
+    loadTvestjartenPage();
+  </script>
+</body>
+</html>
